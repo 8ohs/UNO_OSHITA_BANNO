@@ -37,3 +37,5 @@ class RandomPlayer: # ランダムプレイヤ
     def __init__(self, firstCardNum):
         self.firstCardNum = firstCardNum # モンテカルロ開始するときの所持カード枚数
         self.gouhousyu = []
+
+        

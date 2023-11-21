@@ -138,7 +138,6 @@ class Dealer:
         self.cards = [[] for _ in range(4)] # 各プレイヤの手札
         self.bindTurn = [0, 0, 0, 0] # 残りバインドターン
         self.order = [] # 勝利順
-        self.playingOder = [0, 1, 2, 3]
         self.isReverse = False
         self.playingIndex = 0
 
@@ -152,7 +151,7 @@ class Dealer:
                str(self.beforeCard.get('special')) == 'wild_draw_4' or
                str(self.beforeCard.get('special')) == 'white_wild' or
                str(self.beforeCard.get('special')) == 'wild_shuffle'): #最初のカードがワイルドならやり直す
-            self.yamaCards = self.getAllCards() # 山のカード
+            self.yamaCards.append(self.beforeCard)
             random.shuffle(self.yamaCards) # シャッフル
             self.baCards.clear()
             self.beforeCard = self.yamaCards.pop(0) # 一番上のカードを設定

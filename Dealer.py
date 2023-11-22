@@ -165,30 +165,27 @@ class Dealer:
             print('はじめのカード: ' + self.beforeCard.get('color') + ': ' + str(self.beforeCard.get('number')))
             
     def gameStart(self): # ゲーム開始
-        flag = True
-        while flag:
-            while True:
-                i = self.playingIndex
-                if self.bindTurn[i] == 0:
-                    if self.putCard(self.players[i].selectCard(self.cards[i], self.beforeCard), i, True):
-                        if len(self.cards[i]) == 0:
-                            self.order.append(str(i))
-                            print('p' + str(i) + ' :あがり')
-                            flag = False
-                            break
-                    else:
-                        self.putCard(self.players[i].selectCard(self.cards[i], self.beforeCard), i, False)
-                else: #バインド中のプレイヤの処理
-                    print('p' + str(i) + ' is in a bind')
-                    self.bindTurn[i] -= 1
-                    self.putCard(None, i, True)
-
-                if self.isReverse:
-                    self.playingIndex += -1
+        while True:
+            i = self.playingIndex
+            if self.bindTurn[i] == 0:
+                if self.putCard(self.players[i].selectCard(self.cards[i], self.beforeCard), i, True):
+                    if len(self.cards[i]) == 0:
+                        self.order.append(str(i))
+                        print('p' + str(i) + ' :あがり')
+                        break
                 else:
-                    self.playingIndex += 1
+                    self.putCard(self.players[i].selectCard(self.cards[i], self.beforeCard), i, False)
+            else: #バインド中のプレイヤの処理
+                print('p' + str(i) + ' is in a bind')
+                self.bindTurn[i] -= 1
+                self.putCard(None, i, True)
+
+            if self.isReverse:
+                self.playingIndex += -1
+            else:
+                self.playingIndex += 1
                     
-                self.playingIndex = self.playingIndex % 4
+            self.playingIndex = self.playingIndex % 4
                     
 
         print('ゲーム終了')

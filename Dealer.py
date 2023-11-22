@@ -21,12 +21,12 @@ class Dealer:
 
         for w in wilds: # ワイルドカードを取得
             card = {'color' : 'black', 'special' : w}
-            res.append(card.copy())
+            res.append(card)
 
         card = {'color' : 'white', 'special' : 'white_wild'}
-        res.append(card.copy())
-        res.append(card.copy())
-        res.append(card.copy())
+        res.append(card)
+        res.append(card)
+        res.append(card)
 
         return res
 
@@ -43,7 +43,7 @@ class Dealer:
         if card is not None:
             print('put :p' + str(i) + ': ' + self.printCard(card)) # log
             self.baCards.append(card) # 場に出す
-            self.beforeCard = card # 一番上のカードを更新
+            self.beforeCard = card.copy() # 一番上のカードを更新
             self.cards[i].remove(card) #プレイヤの手札から削除
 
             if card.get('special') is not None:

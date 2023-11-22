@@ -30,6 +30,12 @@ class Dealer:
 
         return res
 
+    def removeCardsFromYama(self, cards, isAppendBaCards):
+        for c in cards:
+            self.yamaCards.remove(c)
+            if isAppendBaCards:
+                self.baCards.append(c)
+
     
     def putCard(self, card, i, canDraw): # カードが出されたときの処理
         def printAllCards(): # log
@@ -39,8 +45,13 @@ class Dealer:
             print('p' + str(i) + 'の手持ち=======================')
 
         #printAllCards()
-        
         if card is not None:
+            if card.get('selectColor') is not None: #色選択の要素を削除
+                selectColor = card.get('selectColor')
+                card = {'color' : 'black', 'special' : card.get('special')} 
+            else:
+                selectColor = (['blue', 'red', 'yellow', 'green'][random.randrange(4)]) #色決め
+                
             print('put :p' + str(i) + ': ' + self.printCard(card)) # log
             self.baCards.append(card) # 場に出す
             self.beforeCard = card.copy() # 一番上のカードを更新
@@ -57,7 +68,7 @@ class Dealer:
                 elif (card_special == 'reverse'):
                     self.isReverse = not self.isReverse
                 elif (card_special == 'wild'):
-                    self.beforeCard['color'] = (['blue', 'red', 'yellow', 'green'][random.randrange(4)]) #色決め
+                    self.beforeCard['color'] = selectColor
                     print('color changed for ' + self.beforeCard.get('color'))
                 elif (card_special == 'wild_draw_4'): # 4ドロー 
                     self.skipPlayer()
@@ -65,12 +76,12 @@ class Dealer:
                     self.drawCard(self.playingIndex)
                     self.drawCard(self.playingIndex)
                     self.drawCard(self.playingIndex)
-                    self.beforeCard['color'] = (['blue', 'red', 'yellow', 'green'][random.randrange(4)]) #色決め
+                    self.beforeCard['color'] = selectColor
                     print('color changed for ' + self.beforeCard.get('color'))
                 elif (card_special == 'wild_shuffle'): #シャッフル
                     self.shuffleCards()
                     print('player' + "'" + 's cards have been shuffled')
-                    self.beforeCard['color'] = (['blue', 'red', 'yellow', 'green'][random.randrange(4)]) #色決め
+                    self.beforeCard['color'] = selectColor
                     print('color changed for ' + self.beforeCard.get('color'))
                 elif (card_special == 'white_wild'): #白いワイルド
                     self.beforeCard['color'] = self.baCards[-2].get('color')
@@ -134,37 +145,47 @@ class Dealer:
         self.yamaCards = self.getAllCards() # 山のカード
         random.shuffle(self.yamaCards) # シャッフル
         self.baCards = [] # 場にある積まれたカード
-        self.beforeCard = self.yamaCards.pop(0) # 一番上のカードを設定
-        self.baCards.append(self.beforeCard)
-        self.cards = []
+        self.beforeCard = None #場の一番上のカード
         self.cards = [[] for _ in range(4)] # 各プレイヤの手札
         self.bindTurn = [0, 0, 0, 0] # 残りバインドターン
         self.order = [] # 勝利順
         self.isReverse = False
         self.playingIndex = 0
 
-        # カードを配布
+
+    def setUp(self): # セットアップ
         print('初期手札を配布します')
         for p in range(4):
             for i in range(self.players[p].firstCardNum):
                 self.drawCard(p)
 
-        while (str(self.beforeCard.get('special')) == 'wild' or
-               str(self.beforeCard.get('special')) == 'wild_draw_4' or
-               str(self.beforeCard.get('special')) == 'white_wild' or
-               str(self.beforeCard.get('special')) == 'wild_shuffle'): #最初のカードがワイルドならやり直す
-            self.yamaCards.append(self.beforeCard)
-            random.shuffle(self.yamaCards) # シャッフル
-            self.baCards.clear()
-            self.beforeCard = self.yamaCards.pop(0) # 一番上のカードを設定
-            self.baCards.append(self.beforeCard)
+        print('はじめのカード: {} : {}'.format(self.beforeCard.get('color'), self.beforeCard.get('special') or self.beforeCard.get('number')))
+
+    def calcMyScore(self):
+        scores = [0] * 4
+        for i in range(4):
+            for c in self.cards[i]:
+                if c.get('number') is not None:
+                    scores[i] -= c.get('number')
+                elif (c.get('special') == 'skip' or
+                      c.get('special') == 'reverse' or
+                      c.get('special') == 'draw_2'):
+                    scores[i] -= 20
+                elif (c.get('special') == 'wild_shuffle' or
+                      c.get('special') == 'white_wild'):
+                    scores[i] -= 40
+                else:
+                    scores[i] -= 50
+
+        for i in range(4):
+            if len(self.cards[i]) == 0:
+                scores[i] = sum(scores) * -1
+
+        return scores[0]
         
-        if self.beforeCard.get('number') is None:
-            print('はじめのカード: ' + self.beforeCard.get('color') + ': ' + str(self.beforeCard.get('special')))
-        else:
-            print('はじめのカード: ' + self.beforeCard.get('color') + ': ' + str(self.beforeCard.get('number')))
             
     def gameStart(self): # ゲーム開始
+        self.setUp()
         while True:
             i = self.playingIndex
             if self.bindTurn[i] == 0:
@@ -190,3 +211,4 @@ class Dealer:
 
         print('ゲーム終了')
         print(self.order)
+        return self.calcMyScore()

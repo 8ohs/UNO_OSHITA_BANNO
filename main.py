@@ -25,13 +25,14 @@ def main():
                  
     tryNum = [0] * len(putPatterns) #試行回数
     scoreSum = [0] * len(putPatterns) #総得点 (勝利数にしたほうがいいか相談)
+    scoreMean = [0] * len(putPatterns) #得点の平均
 
     p1 = RandomPlayer(0) #自分の分身
     p2 = RandomPlayer(playersCardNum[0])
     p3 = RandomPlayer(playersCardNum[1])
     p4 = RandomPlayer(playersCardNum[2])
 
-    playOutNum = 1000 #プレイアウト数
+    playOutNum = 10000 #プレイアウト数
 
     for i in range(playOutNum):
         randNum = random.randrange(len(putPatterns))
@@ -46,8 +47,9 @@ def main():
         scoreSum[randNum] += dealer.gameStart()
 
     print('結果')
-    print(putPatterns)
-    print(scoreSum)
+    for i in range(len(putPatterns)):
+        scoreMean[i] = scoreSum[i] / tryNum[i]
+        print(str(putPatterns[i]) + 'を出したときのスコアの平均' + str(scoreMean[i]))
 
 if __name__ == '__main__':
     main()

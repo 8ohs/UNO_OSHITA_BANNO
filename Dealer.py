@@ -6,7 +6,7 @@ class Dealer:
 
         colors = ['blue', 'red', 'yellow', 'green']
         specials = ['skip', 'reverse', 'draw_2'] * 2
-        wilds = ['wild', 'wild_draw_4'] * 4 + ['wild_shuffle'] + ['white_wild'] * 3
+        wilds = ['wild', 'wild_draw_4'] * 4 + ['wild_shuffle']
         nums = [0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9]
         for n in nums: # 数字カードを取得
             for c in colors:
@@ -19,25 +19,28 @@ class Dealer:
                 card = {'color' : c, 'special' : s}
                 res.append(card)
 
-        for w in wilds: # ワイルドカードを取得 とりあえず黒ってことに
+        for w in wilds: # ワイルドカードを取得
             card = {'color' : 'black', 'special' : w}
             res.append(card)
+
+        card = {'color' : 'white', 'special' : 'white_wild'}
+        res.append(card)
+        res.append(card)
+        res.append(card)
 
         return res
 
     
     def putCard(self, card, i, canDraw): # カードが出されたときの処理
         def printAllCards(): # log
-            print('player' + str(i) + 'の手持ち=======================')
+            print('p' + str(i) + 'の手持ち=======================')
             for c in self.cards[i]:
-                print(c.get('color') + str(c.get('number')))
-            print('\n')
-            print('selected: ' + card.get('color') + str(card.get('number')))
-            print('\n')
-            
-        if card is not None:
-            # printAllCards()
+                print(self.printCard(c))
+            print('p' + str(i) + 'の手持ち=======================')
 
+        # printAllCards()
+        
+        if card is not None:
             print('put :p' + str(i) + ': ' + self.printCard(card)) # log
             self.baCards.append(card) # 場に出す
             self.beforeCard = card # 一番上のカードを更新
@@ -65,7 +68,6 @@ class Dealer:
                     self.beforeCard['color'] = (['blue', 'red', 'yellow', 'green'][random.randrange(4)]) #色決め
                     print('color changed for ' + self.beforeCard.get('color'))
                 elif (card_special == 'wild_shuffle'): #シャッフル
-                    self.skipPlayer()
                     self.shuffleCard()
                     print('player' + "'" + 's cards have been shuffled')
                     self.beforeCard['color'] = (['blue', 'red', 'yellow', 'green'][random.randrange(4)]) #色決め
@@ -74,9 +76,7 @@ class Dealer:
                     self.beforeCard['color'] = self.baCards[-2].get('color')
                     print('bind ' + 'p' + str((self.playingIndex + 2) % 4) + ' for 2 turns')
                     self.bindTurn[(self.playingIndex + 2) % 4] += 2
-                    self.skipPlayer()
-                    
-                                
+                    self.skipPlayer()                                                  
             return True
 
         if canDraw:

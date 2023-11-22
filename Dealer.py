@@ -21,12 +21,12 @@ class Dealer:
 
         for w in wilds: # ワイルドカードを取得
             card = {'color' : 'black', 'special' : w}
-            res.append(card)
+            res.append(card.copy())
 
         card = {'color' : 'white', 'special' : 'white_wild'}
-        res.append(card)
-        res.append(card)
-        res.append(card)
+        res.append(card.copy())
+        res.append(card.copy())
+        res.append(card.copy())
 
         return res
 
@@ -38,7 +38,7 @@ class Dealer:
                 print(self.printCard(c))
             print('p' + str(i) + 'の手持ち=======================')
 
-        # printAllCards()
+        #printAllCards()
         
         if card is not None:
             print('put :p' + str(i) + ': ' + self.printCard(card)) # log
@@ -68,7 +68,7 @@ class Dealer:
                     self.beforeCard['color'] = (['blue', 'red', 'yellow', 'green'][random.randrange(4)]) #色決め
                     print('color changed for ' + self.beforeCard.get('color'))
                 elif (card_special == 'wild_shuffle'): #シャッフル
-                    self.shuffleCard()
+                    self.shuffleCards()
                     print('player' + "'" + 's cards have been shuffled')
                     self.beforeCard['color'] = (['blue', 'red', 'yellow', 'green'][random.randrange(4)]) #色決め
                     print('color changed for ' + self.beforeCard.get('color'))
@@ -95,7 +95,7 @@ class Dealer:
         else:
             return(card.get('color') + ':' + str(card.get('special'))) #log
 
-    def shuffleCard(self): #シャッフル
+    def shuffleCards(self): #シャッフル
         allPlayersCard = self.cards[0] + self.cards[1] + self.cards[2] + self.cards[3]
         self.cards[0].clear()
         self.cards[1].clear()
@@ -108,7 +108,7 @@ class Dealer:
         else:
             addNum = 1
 
-        i = self.playingIndex % 4
+        i = (self.playingIndex + addNum ) % 4
         
         for c in allPlayersCard:
             self.cards[i].append(c)

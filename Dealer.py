@@ -123,9 +123,11 @@ class Dealer:
         
         if len(self.yamaCards) == 0:
             print('山がゼロになりました')
+            beforeCardCopy = self.baCards.pop(-1)
             random.shuffle(self.baCards)
             for i in range(len(self.baCards)):
                 self.yamaCards.append(self.baCards.pop(0))
+            self.baCards.append(beforeCardCopy)
 
     def __init__(self, p1, p2, p3, p4): # コンストラクタ(4人のプレイヤで初期化)
         self.players = [p1, p2, p3, p4]

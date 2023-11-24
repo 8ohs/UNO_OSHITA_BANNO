@@ -4,14 +4,14 @@ import random
 
 def main():
     before_card = {'color' : 'green', 'number' : 9} #場のカード
-    playersCardNum = [7, 7, 7] # リバースされてないときの順番で自分の次の人から
-    releasedCards = [{'color' : 'green', 'number' : 0}, {'color' : 'red', 'number' : 0}] # すでに出されたカードリスト
-    cards = [{'color' : 'green', 'number' : 1}, {'color' : 'red', 'number' : 1}, {'color' : 'black', 'special' : 'wild'}, {'color' : 'red', 'number' : 8}] # 自分の手札
+    playersCardNum = [7, 7, 1] # リバースされてないときの順番で自分の次の人から
+    releasedCards = [{'color' : 'green', 'number' : 0}, {'color' : 'red', 'number' : 0}, {'color' : 'green', 'number' : 1}] # すでに出されたカードリスト
+    cards = [{'color' : 'green', 'number' : 1}, {'color' : 'red', 'number' : 1}, {'color' : 'black', 'special' : 'wild'}, {'color' : 'red', 'number' : 8}, {'color' : 'black', 'special' : 'wild_draw_4'}, {'color' : 'red', 'special' : 'skip'}, {'color' : 'red', 'special' : 'draw_2'}] # 自分の手札
     isReverse = False #リバース中かどうか (リバース中ならTrue)
 
     # ここで手札とbefore_cardから合法手を選ぶ処理をする
     
-    gouhousyu = [{'color' : 'green', 'number' : 1}, {'color' : 'black', 'special' : 'wild'}] # 合法手
+    gouhousyu = [{'color' : 'green', 'number' : 1}, {'color' : 'black', 'special' : 'wild'}, {'color' : 'black', 'special' : 'wild_draw_4'}] # 合法手
     putPatterns = [] #色選択を考慮した出す手の全パターン
     for c in gouhousyu:
         if (c.get('special') == 'wild' or
@@ -32,7 +32,7 @@ def main():
     p3 = RandomPlayer(playersCardNum[1])
     p4 = RandomPlayer(playersCardNum[2])
 
-    playOutNum = 10000 #プレイアウト数
+    playOutNum = 5000 #プレイアウト数
 
     for i in range(playOutNum):
         randNum = random.randrange(len(putPatterns))
@@ -42,14 +42,14 @@ def main():
         dealer.isReverse = isReverse #リバース中かどうかをセット
         dealer.cards[0] = cards.copy()
         dealer.putCard(putPatterns[randNum], 0, False)
-        dealer.playingIndex = 1
+        dealer.skipPlayer()
         tryNum[randNum] += 1
         scoreSum[randNum] += dealer.gameStart()
 
     print('結果')
     for i in range(len(putPatterns)):
         scoreMean[i] = scoreSum[i] / tryNum[i]
-        print(str(putPatterns[i]) + 'を出したときのスコアの平均' + str(scoreMean[i]))
+        print(str(putPatterns[i]) + 'を出したときのスコアの平均' + str(int(scoreMean[i])))
 
 if __name__ == '__main__':
     main()

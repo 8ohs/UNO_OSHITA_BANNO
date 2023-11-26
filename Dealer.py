@@ -1,7 +1,7 @@
 import random
 
 class Dealer:
-    def getAllCards(self):
+    def getAllCards(self):#全部ある時の山札生成
         res = []
 
         colors = ['blue', 'red', 'yellow', 'green']
@@ -30,11 +30,18 @@ class Dealer:
 
         return res
 
-    def removeCardsFromYama(self, cards, isAppendBaCards):
+    def removeCardsFromYama(self, cards, isAppendBaCards):#すでに出たカードなどを山から抜く
         for c in cards:
             self.yamaCards.remove(c)
             if isAppendBaCards:
                 self.baCards.append(c)
+
+    def draw4Challenge(self):#チャレンジ成功のときのみ呼ばれる
+        self.drawCard(self.playingIndex)
+        self.drawCard(self.playingIndex)
+        self.drawCard(self.playingIndex)
+        self.drawCard(self.playingIndex)
+        self.skipPlayer()
 
     
     def putCard(self, card, i, canDraw): # カードが出されたときの処理
@@ -57,7 +64,7 @@ class Dealer:
             self.beforeCard = card.copy() # 一番上のカードを更新
             self.cards[i].remove(card) #プレイヤの手札から削除
 
-            if card.get('special') is not None:
+            if card.get('special') is not None:#何かしらの記号カードのとき
                 card_special = str(card.get('special'))
                 if (card_special == 'skip'):
                     self.skipPlayer()
@@ -88,9 +95,9 @@ class Dealer:
                     print('bind ' + 'p' + str((self.playingIndex + 2) % 4) + ' for 2 turns')
                     self.bindTurn[(self.playingIndex + 2) % 4] += 2
                     self.skipPlayer()                                                  
-            return True
+            return True #カードを出したらTureを返す
 
-        if canDraw:
+        if canDraw: #カードを引けるターンなら
             self.drawCard(i)
         return False
 

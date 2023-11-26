@@ -36,12 +36,11 @@ class Dealer:
             if isAppendBaCards:
                 self.baCards.append(c)
 
-    def draw4Challenge(self):#チャレンジ成功のときのみ呼ばれる
+    def draw4Cards(self):#4draw
         self.drawCard(self.playingIndex)
         self.drawCard(self.playingIndex)
         self.drawCard(self.playingIndex)
         self.drawCard(self.playingIndex)
-        self.skipPlayer()
 
     
     def putCard(self, card, i, canDraw): # カードが出されたときの処理
@@ -61,6 +60,7 @@ class Dealer:
                 
             print('put :p' + str(i) + ': ' + self.printCard(card)) # log
             self.baCards.append(card) # 場に出す
+            beforeCaradColor = self.beforeCard.get('color')#シャッフルカードの処理のために１つ前の色を取得
             self.beforeCard = card.copy() # 一番上のカードを更新
             self.cards[i].remove(card) #プレイヤの手札から削除
 
@@ -79,10 +79,7 @@ class Dealer:
                     print('color changed for ' + self.beforeCard.get('color'))
                 elif (card_special == 'wild_draw_4'): # 4ドロー 
                     self.skipPlayer()
-                    self.drawCard(self.playingIndex) 
-                    self.drawCard(self.playingIndex)
-                    self.drawCard(self.playingIndex)
-                    self.drawCard(self.playingIndex)
+                    self.draw4Cards()
                     self.beforeCard['color'] = selectColor
                     print('color changed for ' + self.beforeCard.get('color'))
                 elif (card_special == 'wild_shuffle'): #シャッフル
@@ -91,7 +88,7 @@ class Dealer:
                     self.beforeCard['color'] = selectColor
                     print('color changed for ' + self.beforeCard.get('color'))
                 elif (card_special == 'white_wild'): #白いワイルド
-                    self.beforeCard['color'] = self.baCards[-2].get('color')
+                    self.beforeCard['color'] = beforeCaradColor
                     print('bind ' + 'p' + str((self.playingIndex + 2) % 4) + ' for 2 turns')
                     self.bindTurn[(self.playingIndex + 2) % 4] += 2
                     self.skipPlayer()                                                  

@@ -22,6 +22,7 @@ def main():
         else:
             putPatterns.append(c)
 
+    putPatterns.append(None)
                  
     tryNum = [0] * len(putPatterns) #試行回数
     scoreSum = [0] * len(putPatterns) #総得点 (勝利数にしたほうがいいか相談)
@@ -35,16 +36,17 @@ def main():
     playOutNum = 5000 #プレイアウト数
 
     for i in range(playOutNum):
-        randNum = random.randrange(len(putPatterns))
+        randNum = random.randrange(len(putPatterns))#乱数生成
         dealer = Dealer(p1, p2, p3, p4)
         dealer.removeCardsFromYama(releasedCards, True) #山から出されたカードを抜く
         dealer.removeCardsFromYama(cards, False) #山から自分の手札のカードを抜く
         dealer.isReverse = isReverse #リバース中かどうかをセット
-        dealer.cards[0] = cards.copy()
-        dealer.putCard(putPatterns[randNum], 0, False)
-        dealer.skipPlayer()
-        tryNum[randNum] += 1
-        scoreSum[randNum] += dealer.gameStart()
+        dealer.cards[0] = cards.copy()#手札をセット
+        dealer.beforeCard = before_card#場の一番上のカードをセット
+        dealer.putCard(putPatterns[randNum], 0, True)#カードを出す処理。Noneの場合は一枚引く
+        dealer.skipPlayer()#自分の次の人の番にする
+        tryNum[randNum] += 1#試行回数を増やす
+        scoreSum[randNum] += dealer.gameStart()#プレイアウト。返り値は自分のスコア
 
     print('結果')
     for i in range(len(putPatterns)):

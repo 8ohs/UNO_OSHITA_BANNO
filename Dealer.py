@@ -160,7 +160,6 @@ class Dealer:
         self.beforeCard = None #場の一番上のカード
         self.cards = [[] for _ in range(4)] # 各プレイヤの手札
         self.bindTurn = [0, 0, 0, 0] # 残りバインドターン
-        self.order = [] # 勝利順
         self.isReverse = False
         self.playingIndex = 0
 
@@ -203,7 +202,6 @@ class Dealer:
             if self.bindTurn[i] == 0:
                 if self.putCard(self.players[i].selectCard(self.cards[i], self.beforeCard), i, True):
                     if len(self.cards[i]) == 0:
-                        self.order.append(str(i))
                         print('p' + str(i) + ' :あがり')
                         break
                 else:

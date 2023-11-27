@@ -35,6 +35,14 @@ class Dealer:
             self.yamaCards.remove(c)
             if isAppendBaCards:
                 self.baCards.append(c)
+            if len(self.yamaCards) == 0:
+                print('山がゼロになりました')
+                beforeCardCopy = self.baCards.pop(-1)
+                random.shuffle(self.baCards)
+                for i in range(len(self.baCards)):
+                    self.yamaCards.append(self.baCards.pop(0))
+                self.baCards.append(beforeCardCopy)
+
 
     def draw4Cards(self):#4draw
         self.drawCard(self.playingIndex)

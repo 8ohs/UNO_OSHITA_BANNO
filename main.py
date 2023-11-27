@@ -1,22 +1,30 @@
 from RandomPlayer import RandomPlayer
-from Dealer import Dealer
+#from Dealer import Dealer
+from MyDealer import Dealer
 import random
 
 def main():
-    #before_card = {'color' : 'yellow', 'number' : 9} #場のカード
-    before_card = {'color' : 'green', 'number' : 9} #場のカード
-    playersCardNum = [2, 7, 7] # リバースされてないときの順番で自分の次の人から
-    releasedCards = [{'color' : 'green', 'number' : 0}, {'color' : 'red', 'number' : 0}, {'color' : 'green', 'number' : 1}] # すでに出されたカードリスト
+    #before_card = {'color' : 'yellow', 'number' : 9} #場のカードchallengeされない方
+    before_card = {'color' : 'green', 'number' : 9} #場のカードchallengeされる方
+    
+    playersCardNum = [7, 7, 7] # リバースされてないときの順番で自分の次の人から
+    releasedCards = [{'color' : 'green', 'number' : 2}, {'color' : 'green', 'number' : 3}, {'color' : 'green', 'number' : 4}, {'color' : 'green', 'number' : 0}, {'color' : 'red', 'number' : 0}, {'color' : 'green', 'number' : 1}] # すでに出されたカードリスト
     cards = [{'color' : 'green', 'number' : 1}, {'color' : 'red', 'number' : 1}, {'color' : 'red', 'number' : 8}, {'color' : 'black', 'special' : 'wild_draw_4'}, {'color' : 'red', 'special' : 'skip'}, {'color' : 'red', 'special' : 'draw_2'}] # 自分の手札
     isReverse = False #リバース中かどうか (リバース中ならTrue)
 
     # ここで手札とbefore_cardから合法手を選ぶ処理をする
     
-    gouhousyu = [{'color' : 'green', 'number' : 1}, {'color' : 'black', 'special' : 'wild_draw_4'}] # 合法手
-    #gouhousyu = [{'color' : 'black', 'special' : 'wild_draw_4'}] # 合法手
+    
+    #gouhousyu = [{'color' : 'black', 'special' : 'wild_draw_4'}] # 合法手 challengeされない方
+    gouhousyu = [{'color' : 'green', 'number' : 1}, {'color' : 'black', 'special' : 'wild_draw_4'}] # 合法手 challengeされる方
+
+    uniqueGouhousyu = [] #重複を排除した合法手
+    for c in gouhousyu:
+        if c not in uniqueGouhousyu:
+            uniqueGouhousyu.append(c)
     
     putPatterns = [] #色選択を考慮した出す手の全パターン
-    for c in gouhousyu:
+    for c in uniqueGouhousyu:
         if (c.get('special') == 'wild' or
             c.get('special') == 'wild_draw_4'):
             for selectColor in ['red', 'blue', 'green', 'yellow']:
@@ -36,7 +44,7 @@ def main():
     p3 = RandomPlayer(playersCardNum[1])
     p4 = RandomPlayer(playersCardNum[2])
 
-    playOutNum = 5000 #プレイアウト数
+    playOutNum = 6000 #プレイアウト数
 
     for i in range(playOutNum):
         randNum = random.randrange(len(putPatterns))#乱数生成
@@ -59,6 +67,23 @@ def main():
     for i in range(len(putPatterns)):
         scoreMean[i] = scoreSum[i] / tryNum[i]
         print(str(putPatterns[i]) + 'を出したときのスコアの平均' + str(int(scoreMean[i])))
+
+    maxIndex = scoreMean.index(max(scoreMean))
+    ansCard = putPatterns[maxIndex]
+
+    if ansCard is None:
+        return None
+    
+    card = {}
+    card['color'] = ansCard.get('color')
+    if ansCard.get('special') is not None:
+        card['special'] = ansCard.get('special')
+    else:
+        card['number'] = ansCard.get('number')
+
+    print('selected card is')
+    print(card)
+    print(ansCard.get('selectColor'))
 
 if __name__ == '__main__':
     main()

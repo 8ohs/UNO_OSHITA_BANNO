@@ -2,33 +2,61 @@ from RandomPlayer import RandomPlayer
 #from Dealer import Dealer
 from MyDealer import Dealer
 import random
+import time
 
 def main():
-    #before_card = {'color' : 'yellow', 'number' : 9} #場のカードchallengeされない方
-    before_card = {'color' : 'green', 'number' : 9} #場のカードchallengeされる方
+    startTime = time.perf_counter()#開始時間
+    
+    before_card = {'color' : 'yellow', 'number' : 9} #場のカードchallengeされない方
+    #before_card = {'color' : 'green', 'number' : 9} #場のカードchallengeされる方
     
     playersCardNum = [7, 7, 7] # リバースされてないときの順番で自分の次の人から
     releasedCards = [{'color' : 'green', 'number' : 2}, {'color' : 'green', 'number' : 3}, {'color' : 'green', 'number' : 4}, {'color' : 'green', 'number' : 0}, {'color' : 'red', 'number' : 0}, {'color' : 'green', 'number' : 1}] # すでに出されたカードリスト
-    cards = [{'color' : 'green', 'number' : 1}, {'color' : 'red', 'number' : 1}, {'color' : 'red', 'number' : 8}, {'color' : 'black', 'special' : 'wild_draw_4'}, {'color' : 'red', 'special' : 'skip'}, {'color' : 'red', 'special' : 'draw_2'}] # 自分の手札
+    cards = [{'color' : 'green', 'number' : 1}, {'color' : 'red', 'number' : 1}, {'color' : 'red', 'number' : 8}, {'color' : 'blue', 'special' : 'wild_draw_4'}, {'color' : 'black', 'special' : 'wild_draw_4'}, {'color' : 'red', 'special' : 'skip'}, {'color' : 'red', 'special' : 'draw_2'}] # 自分の手札
     isReverse = False #リバース中かどうか (リバース中ならTrue)
 
     # ここで手札とbefore_cardから合法手を選ぶ処理をする
-    
-    
-    #gouhousyu = [{'color' : 'black', 'special' : 'wild_draw_4'}] # 合法手 challengeされない方
-    gouhousyu = [{'color' : 'green', 'number' : 1}, {'color' : 'black', 'special' : 'wild_draw_4'}] # 合法手 challengeされる方
+        
+    gouhousyu = [{'color' : 'blue', 'special' : 'wild_draw_4'}, {'color' : 'black', 'special' : 'wild_draw_4'}] # 合法手 challengeされない方
+    #gouhousyu = [{'color' : 'green', 'number' : 1}, {'color' : 'blue', 'special' : 'wild_draw_4'}] # 合法手 challengeされる方
 
+    wFlag = True
+    wdFlag = True
+    wsFlag = True
+    wwFlag = True
+    
     uniqueGouhousyu = [] #重複を排除した合法手
     for c in gouhousyu:
-        if c not in uniqueGouhousyu:
+        if c.get('special') == 'wild':
+            if wFlag:
+                uniqueGouhousyu.append(c)
+            wFlag = False
+            continue
+        elif c.get('special') == 'wild_draw_4':
+            if wdFlag:
+                uniqueGouhousyu.append(c)
+            wdFlag = False
+            continue
+        elif c.get('special') == 'wild_shuffle':
+            if wsFlag:
+                uniqueGouhousyu.append(c)
+            wsFlag = False
+            continue
+        elif c.get('special') == 'white_wild':
+            if wwFlag:
+                uniqueGouhousyu.append(c)
+            wwFlag = False
+            continue
+        elif c not in uniqueGouhousyu:
             uniqueGouhousyu.append(c)
-    
+            
+
     putPatterns = [] #色選択を考慮した出す手の全パターン
     for c in uniqueGouhousyu:
         if (c.get('special') == 'wild' or
             c.get('special') == 'wild_draw_4'):
             for selectColor in ['red', 'blue', 'green', 'yellow']:
-                card = {'color' : 'black', 'special' : c.get('special'), 'selectColor' : selectColor}
+                card = {'color' : c.get('color'), 'special' : c.get('special'), 'selectColor' : selectColor}
                 putPatterns.append(card)
         else:
             putPatterns.append(c)
@@ -44,16 +72,19 @@ def main():
     p3 = RandomPlayer(playersCardNum[1])
     p4 = RandomPlayer(playersCardNum[2])
 
-    playOutNum = 6000 #プレイアウト数
+    #playOutNum = 6000 #プレイアウト数
+    counter = 0
 
-    for i in range(playOutNum):
+    #for i in range(playOutNum):
+    while True:
+        counter += 1
         randNum = random.randrange(len(putPatterns))#乱数生成
         selectedCard = putPatterns[randNum] #選ばれたカード
         dealer = Dealer(p1, p2, p3, p4)
         dealer.removeCardsFromYama(releasedCards, True) #山から出されたカードを抜く
         dealer.removeCardsFromYama(cards, False) #山から自分の手札のカードを抜く
         dealer.isReverse = isReverse #リバース中かどうかをセット
-        dealer.cards[0] = cards.copy()#手札をセット
+        dealer.setMyCards(cards.copy())#自分の手札をセット
         dealer.beforeCard = before_card#場の一番上のカードをセット
         if selectedCard is not None and selectedCard.get('special') == 'wild_draw_4' and len(gouhousyu) != 1:#最初のみチャレンジが成功する場合必ずされる
             dealer.draw4Cards()
@@ -63,6 +94,9 @@ def main():
         tryNum[randNum] += 1#試行回数を増やす
         scoreSum[randNum] += dealer.gameStart()#プレイアウト。返り値は自分のスコア
 
+        if time.perf_counter() - startTime > 4: #4秒超えたら終わり
+            break
+
     print('結果')
     for i in range(len(putPatterns)):
         scoreMean[i] = scoreSum[i] / tryNum[i]
@@ -70,6 +104,10 @@ def main():
 
     maxIndex = scoreMean.index(max(scoreMean))
     ansCard = putPatterns[maxIndex]
+
+    print('play out num is')
+    print(counter)
+
 
     if ansCard is None:
         return None

@@ -30,9 +30,18 @@ class Dealer:
         return res
 
     def removeCardsFromYama(self, cards, isAppendBaCards):#すでに出たカードなどを山から抜く
+        fixedCards = [] #直したカードのリスト
         for c in cards:
-            if c not in self.yamaCards: #あってはならないが、エラーが出たときに困るから
-                continue
+            if (c.get('special') == 'wild' or
+                c.get('special') == 'wild_draw_4' or
+                c.get('special') == 'wild_shuffle'):
+                c['color'] = 'black'
+            elif c.get('special') == 'white_wild':
+                c['color'] = 'white'
+
+            fixedCards.append(c)
+        
+        for c in fixedCards:
             self.yamaCards.remove(c)
             if isAppendBaCards:
                 self.baCards.append(c)
@@ -50,6 +59,18 @@ class Dealer:
         self.drawCard(self.playingIndex)
         self.drawCard(self.playingIndex)
 
+    def setMyCards(self, cards):
+        for c in cards:
+            if (c.get('special') == 'wild' or
+                c.get('special') == 'wild_draw_4' or
+                c.get('special') == 'wild_shuffle'):
+                c['color'] = 'black'
+                self.cards[0].append(c)
+            elif c.get('special') == 'white_wild':
+                c['color'] = 'white'
+                self.cards[0].append(c)
+            else:
+                self.cards[0].append(c)
     
     def putCard(self, card, i, canDraw): # カードが出されたときの処理
         if card is not None:

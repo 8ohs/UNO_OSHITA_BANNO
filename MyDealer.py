@@ -168,7 +168,41 @@ class Dealer:
     def setUp(self): # セットアップ
         for p in range(4):
             for i in range(self.players[p].firstCardNum):
-                self.drawCard(p)
+                if self.players[p].removeCard is not None:
+                    yamaLen = len(self.yamaCards)
+                    flag = False
+                    rmCard = self.players[p].removeCard
+                    for counter in range(yamaLen):
+                        card = self.yamaCards.pop(0)
+                        num = card.get('number')
+                        special = card.get('special')
+                        
+                        print('tmp card == {}'.format(card))
+                        if (card.get('color') == 'black' or card.get('color') == 'white' or card.get('color') == rmCard.get('color') or
+                            (special and str(special) == str(rmCard.get('special'))) or
+                            (num is not None or (num is not None and int(num) == 0)) and
+                             rmCard.get('number') and int (num) == int(rmCard.get('number'))):
+                            self.yamaCards.append(card)
+                            print('not put')
+                            if counter == yamaLen - 1:
+                                flag = True
+                        else:
+                            self.cards[p].append(card)
+                            print('put and break')
+                            break
+                    if flag:
+                        self.drawCard(p)
+                        print('naikara tekitouni')
+                else:
+                    print('somosomo tekitou')
+                    self.drawCard(p)
+
+        for p in range(4):
+            print('p' + str(p) + '=========')
+            for c in self.cards[p]:
+                print(c)
+            print('p' + str(p) + '=========')
+                        
 
     def calcMyScore(self):
         scores = [0] * 4

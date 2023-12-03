@@ -34,6 +34,7 @@ class RandomPlayer: # ランダムプレイヤ
             # 場札と数字または記号が同じカード
                 self.gouhousyu.append(card)
 
-    def __init__(self, firstCardNum):
+    def __init__(self, firstCardNum, removeCard):
         self.firstCardNum = firstCardNum # モンテカルロ開始するときの所持カード枚数
         self.gouhousyu = []
+        self.removeCard = removeCard

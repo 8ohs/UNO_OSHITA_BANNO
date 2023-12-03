@@ -67,10 +67,19 @@ def main():
     scoreSum = [0] * len(putPatterns) #総得点 (勝利数にしたほうがいいか相談)
     scoreMean = [0] * len(putPatterns) #得点の平均
 
-    p1 = RandomPlayer(0) #自分の分身
-    p2 = RandomPlayer(playersCardNum[0])
-    p3 = RandomPlayer(playersCardNum[1])
-    p4 = RandomPlayer(playersCardNum[2])
+    removeCardList = [None] * 3
+    rmCard = {'color' : 'green', 'number' : '2'}
+    rmCard2 = {'color' : 'green', 'special' : 'skip'}
+    rmCard3 = {'color' : 'green', 'special' : 'wild_draw_4'}
+    removeCardList[0] = rmCard
+    removeCardList[1] = rmCard2
+    removeCardList[2] = rmCard3
+    print(removeCardList)
+    
+    p1 = RandomPlayer(0, None) #自分の分身
+    p2 = RandomPlayer(playersCardNum[0], removeCardList[0])
+    p3 = RandomPlayer(playersCardNum[1], removeCardList[1])
+    p4 = RandomPlayer(playersCardNum[2], removeCardList[2])
 
     #playOutNum = 6000 #プレイアウト数
     counter = 0
@@ -94,6 +103,7 @@ def main():
         tryNum[randNum] += 1#試行回数を増やす
         scoreSum[randNum] += dealer.gameStart()#プレイアウト。返り値は自分のスコア
 
+        break #debug
         if time.perf_counter() - startTime > 4: #4秒超えたら終わり
             break
 

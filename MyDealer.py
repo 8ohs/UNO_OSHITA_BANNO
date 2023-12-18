@@ -155,19 +155,15 @@ class Dealer:
 
     def setUp(self): # セットアップ
         for p in range(4):
-            if self.players[p].mustHaveCards is not None:
-                mustLen = len(self.players[p].mustHaveCards)
-                for c in self.players[p].mustHaveCards:#確定分をセット
-                    if c in self.yamaCards:
-                        self.yamaCards.remove(c)
-                        self.cards[p].append(c)
-                    else:
-                        self.cards[p].append(c)
-            else:
-                mustLen = 0
-                    
-                    
-            for i in range(self.players[p].firstCardNum - mustLen): #確定分以外をセット
+            for c in self.players[p].mustHaveCards:#確定分をセット
+                if c in self.yamaCards:
+                    self.yamaCards.remove(c)
+                    self.cards[p].append(c)
+                else:
+                    self.cards[p].append(c)
+                
+        for p in range(4):
+            for i in range(self.players[p].firstCardNum - len(self.players[p].mustHaveCards)): #確定分以外をセット
                 if self.players[p].removeCard is not None:
                     yamaLen = len(self.yamaCards)
                     flag = False
@@ -181,7 +177,6 @@ class Dealer:
                             (num is not None or (num is not None and int(num) == 0)) and
                              rmCard.get('number') and int (num) == int(rmCard.get('number'))):
                             self.yamaCards.append(card)
-                            print('not put')
                             if counter == yamaLen - 1:
                                 flag = True
                         else:

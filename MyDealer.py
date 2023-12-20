@@ -187,9 +187,10 @@ class Dealer:
                 else:
                     self.drawCard(p)
 
-        print("estimated cards of p1")
-        for c in self.cards[1]:
-            print(c)
+        for p in range(4):
+            print("estimated cards of p" + str(p))
+            for c in self.cards[p]:
+                print(c)
 
     def calcMyScore(self):
         scores = [0] * 4

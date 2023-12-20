@@ -74,12 +74,14 @@ def main():
     removeCardList[0] = rmCard
     removeCardList[1] = rmCard2
     removeCardList[2] = rmCard3
-    print(removeCardList)
+
+    mustHaveCards = [[] for _ in range(3)]#確定分を格納する
+    mustHaveCards[0] = [{'color' : 'blue', 'number' : '1'},{'color' : 'blue', 'number' : '2'},{'color' : 'blue', 'number' : '3'}]
     
-    p1 = RandomPlayer(0, None) #自分の分身
-    p2 = RandomPlayer(playersCardNum[0], removeCardList[0])
-    p3 = RandomPlayer(playersCardNum[1], removeCardList[1])
-    p4 = RandomPlayer(playersCardNum[2], removeCardList[2])
+    p1 = RandomPlayer(0, None, mustHaveCards[1]) #自分の分身
+    p2 = RandomPlayer(playersCardNum[0], removeCardList[0], mustHaveCards[0])
+    p3 = RandomPlayer(playersCardNum[1], removeCardList[1], mustHaveCards[1])
+    p4 = RandomPlayer(playersCardNum[2], removeCardList[2], mustHaveCards[2])
 
     #playOutNum = 6000 #プレイアウト数
     counter = 0
@@ -104,7 +106,7 @@ def main():
         scoreSum[randNum] += dealer.gameStart()#プレイアウト。返り値は自分のスコア
 
         break #debug
-        if time.perf_counter() - startTime > 4: #4秒超えたら終わり
+        if time.perf_counter() - startTime > 1: #4秒超えたら終わり
             break
 
     print('結果')

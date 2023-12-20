@@ -153,21 +153,17 @@ class Dealer:
                 self.yamaCards.append(self.baCards.pop(0))
             self.baCards.append(beforeCardCopy)
 
-    def __init__(self, p1, p2, p3, p4): # コンストラクタ(4人のプレイヤで初期化)
-        self.players = [p1, p2, p3, p4]
-        self.yamaCards = self.getAllCards() # 山のカード
-        random.shuffle(self.yamaCards) # シャッフル
-        self.baCards = [] # 場にある積まれたカード
-        self.beforeCard = None #場の一番上のカード
-        self.cards = [[] for _ in range(4)] # 各プレイヤの手札
-        self.bindTurn = [0, 0, 0, 0] # 残りバインドターン
-        self.isReverse = False
-        self.playingIndex = 0
-
-
     def setUp(self): # セットアップ
         for p in range(4):
-            for i in range(self.players[p].firstCardNum):
+            for c in self.players[p].mustHaveCards:#確定分をセット
+                if c in self.yamaCards:
+                    self.yamaCards.remove(c)
+                    self.cards[p].append(c)
+                else:
+                    self.cards[p].append(c)
+                
+        for p in range(4):
+            for i in range(self.players[p].firstCardNum - len(self.players[p].mustHaveCards)): #確定分以外をセット
                 if self.players[p].removeCard is not None:
                     yamaLen = len(self.yamaCards)
                     flag = False
@@ -175,41 +171,33 @@ class Dealer:
                     for counter in range(yamaLen):
                         card = self.yamaCards.pop(0)
                         num = card.get('number')
-                        special = card.get('special')
-                        
-                        print('tmp card == {}'.format(card))
+                        special = card.get('special')     
                         if (card.get('color') == 'black' or card.get('color') == 'white' or card.get('color') == rmCard.get('color') or
                             (special and str(special) == str(rmCard.get('special'))) or
                             (num is not None or (num is not None and int(num) == 0)) and
                              rmCard.get('number') and int (num) == int(rmCard.get('number'))):
                             self.yamaCards.append(card)
-                            print('not put')
                             if counter == yamaLen - 1:
                                 flag = True
                         else:
                             self.cards[p].append(card)
-                            print('put and break')
                             break
                     if flag:
                         self.drawCard(p)
-                        print('naikara tekitouni')
                 else:
-                    print('somosomo tekitou')
                     self.drawCard(p)
 
         for p in range(4):
-            print('p' + str(p) + '=========')
+            print("estimated cards of p" + str(p))
             for c in self.cards[p]:
                 print(c)
-            print('p' + str(p) + '=========')
-                        
 
     def calcMyScore(self):
         scores = [0] * 4
         for i in range(4):
             for c in self.cards[i]:
                 if c.get('number') is not None:
-                    scores[i] -= c.get('number')
+                    scores[i] -= int(c.get('number'))
                 elif (c.get('special') == 'skip' or
                       c.get('special') == 'reverse' or
                       c.get('special') == 'draw_2'):
@@ -249,3 +237,15 @@ class Dealer:
             self.playingIndex = self.playingIndex % 4
                     
         return self.calcMyScore()
+
+    def __init__(self, p1, p2, p3, p4): # コンストラクタ(4人のプレイヤで初期化)
+        self.players = [p1, p2, p3, p4]
+        self.yamaCards = self.getAllCards() # 山のカード
+        random.shuffle(self.yamaCards) # シャッフル
+        self.baCards = [] # 場にある積まれたカード
+        self.beforeCard = None #場の一番上のカード
+        self.cards = [[] for _ in range(4)] # 各プレイヤの手札
+        self.bindTurn = [0, 0, 0, 0] # 残りバインドターン
+        self.isReverse = False
+        self.playingIndex = 0
+

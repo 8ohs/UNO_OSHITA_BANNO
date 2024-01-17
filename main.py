@@ -105,8 +105,7 @@ def main():
         tryNum[randNum] += 1#試行回数を増やす
         scoreSum[randNum] += dealer.gameStart()#プレイアウト。返り値は自分のスコア
 
-        break #debug
-        if time.perf_counter() - startTime > 1: #4秒超えたら終わり
+        if time.perf_counter() - startTime > 0.3: #4秒超えたら終わり
             break
 
     print('結果')
